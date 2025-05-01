@@ -1,1 +1,5 @@
 export * from "./Footer"
+export * from "./ListCategories"
+export * from "./SearchBar"
+export * from "./SideMenu"
+export * from "./Accessories"

@@ -88,7 +88,7 @@ const Login = (props) => {
 						<Text style={{color: "#727272", fontSize: 13, fontFamily: MSSemiBold}}>
 						  Nao tem cadastro ainda?
 						</Text>
-						<TouchableOpacity style={{marginRight: 24}} onPress={() => navigation.navigate('Cadastro')}>
+						<TouchableOpacity style={{marginRight: 24}} onPress={() => navigation.navigate('PersonType')}>
 							<Text style={{color: Primary, fontSize: 13, fontFamily: MSSemiBold}}>
 							   {" "} COMEÇAR AGORA
 							</Text>

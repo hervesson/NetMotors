@@ -1,3 +1,4 @@
+import axios from "axios";
 import api from "../api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -7,6 +8,7 @@ class HelpersAnuncios {
 			const abaixo_fipe = await api.get('/veiculos/abaixo_fipe', {
 				headers: {
 					'Content-Type': 'application/json',
+					'origin': 'netmotors.com.br'
 				},
 			});
 			return abaixo_fipe;
@@ -20,22 +22,25 @@ class HelpersAnuncios {
 		try {
 			const adicioandosRecentemente = await api.get('/veiculos/adicionados_recentemente', {
 				headers: {
+					'Origin': 'netmotors-api-hervesson.com.br',
 					'Content-Type': 'application/json',
 				},
 			});
 			return adicioandosRecentemente;
 		} catch (err) {
+
 			const error = err.response.data;
 			return error;
 		}
 	}
 
-	async SearchAnuncios(search, page, condicao, categoria){
-		try{
-			const carros = await api.get('/veiculos/?page='+page+'&search='+search+'&condition='+condicao+'&categoria='+categoria, { 
+	async SearchAnuncios(search, page, condicao, categoria) {
+		try {
+			const carros = await api.get('/veiculos/?page=' + page + '&search=' + search + '&condition=' + condicao + '&categoria=' + categoria, {
 				headers: {
-	            'Content-Type': 'application/json',
-	        	}
+					'Content-Type': 'application/json',
+					'Origin': 'netmotors-api-hervesson.com.br'
+				}
 			})
 			return carros
 		} catch (err) {
@@ -46,9 +51,10 @@ class HelpersAnuncios {
 
 	async GetMyAnuncios(member_id, page) {
 		try {
-			const meusAnuncios = await api.get('/veiculos?member_id='+member_id+'&page='+page, {
+			const meusAnuncios = await api.get('/veiculos?member_id=' + member_id + '&page=' + page, {
 				headers: {
 					'Content-Type': 'application/json',
+					'Origin': 'netmotors-api-hervesson.com.br'
 				},
 			});
 			return meusAnuncios;
@@ -58,12 +64,12 @@ class HelpersAnuncios {
 		}
 	}
 
-	async SearchFiltros(){
-		try{
-			const carros = await api.get('/veiculos/?page='+page+'&search='+search+'&condition='+condicao, { 
+	async SearchFiltros() {
+		try {
+			const carros = await api.get('/veiculos/?page=' + page + '&search=' + search + '&condition=' + condicao, {
 				headers: {
-	            'Content-Type': 'application/json',
-	        	}
+					'Content-Type': 'application/json',
+				}
 			})
 			return carros
 		} catch (err) {
@@ -72,12 +78,13 @@ class HelpersAnuncios {
 		}
 	}
 
-	async DetalheAnuncio(id){
-		try{
-			const detalhe = await api.get('/veiculos/'+id, { 
+	async DetalheAnuncio(id) {
+		try {
+			const detalhe = await api.get('/veiculos/' + id, {
 				headers: {
-	            'Content-Type': 'application/json',
-	        	}
+					'Content-Type': 'application/json',
+					'Origin': 'netmotors-api-hervesson.com.br'
+				}
 			})
 			return detalhe
 		} catch (err) {
@@ -86,10 +93,10 @@ class HelpersAnuncios {
 		}
 	}
 
-	async CadastroAnuncio(payload){
-		const token = await AsyncStorage.getItem('token');
+	async CadastroAnuncio(payload) {
+		const token = await AsyncStorage.getItem('@App:token');
 
-		let model ={
+		let model = {
 			model_id: payload.modeloId,
 			member_id: payload.memberId,
 			release_year: payload.fabricacao,
@@ -104,7 +111,7 @@ class HelpersAnuncios {
 			body_type: payload.carroceria,
 			transmission: payload.cambio,
 			fuel_type: payload.combustivel,
-			options_features : payload.options,
+			options_features: payload.options,
 			aceita_troca: payload.troca,
 			veiculo_blindado: payload.blindado,
 			veiculo_garantia: payload.garantia,
@@ -113,7 +120,7 @@ class HelpersAnuncios {
 			additional_info: payload.observacoes,
 			origem: 'netmotorsApp'
 		}
-		try{	
+		try {
 			const cadastro = await api.post('/veiculos', model, {
 				headers: {
 					'Content-Type': 'application/json',
@@ -126,8 +133,8 @@ class HelpersAnuncios {
 		}
 	}
 
-	async AddFotos(fotos, id_auto){
-		const token = await AsyncStorage.getItem('token');
+	async AddFotos(fotos, id_auto) {
+		const token = await AsyncStorage.getItem('@App:token');
 
 		const config = {
 			headers: {
@@ -139,7 +146,7 @@ class HelpersAnuncios {
 		let fd = new FormData();
 
 		fotos.forEach(ids => fd.append('fotos[]', {
-			uri: ids.path, 
+			uri: ids.path,
 			type: ids.mime,
 			name: ids.filename || `${Date.now()}.jpg`,
 		}))
@@ -149,45 +156,45 @@ class HelpersAnuncios {
 		try {
 			const fotos = api.post('/veiculos/add_fotos', fd, config);
 			return fotos;
-		} catch(err){
+		} catch (err) {
 			return err
 		}
 	}
 
-	async uploadImage(fotos, id_auto){
-		const token = await AsyncStorage.getItem('token');
-		try{
-			
-	     	let fd = new FormData();
+	async uploadImage(fotos, id_auto) {
+		const token = await AsyncStorage.getItem('@App:token');
+		try {
+
+			let fd = new FormData();
 
 			fd.append('fotos[]', fotos)
 			fd.append('id_auto', id_auto);
-	         
-	      let res = await fetch('https://api.netmotors.com.br/api/v1/veiculos/add_fotos',
-	      	{
-	         	method: 'post',
-	         	body: fd,
-	         	headers: {
-	            	'Content-Type': 'multipart/form-data',
-	            	'Authorization': 'Bearer ' + token
-	         	},
-	      	}
-	      );
-	      return res
-		}catch(err){
-			console.log("foto" +err)
+
+			let res = await fetch('https://api.netmotors.com.br/api/v1/veiculos/add_fotos',
+				{
+					method: 'post',
+					body: fd,
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'Authorization': 'Bearer ' + token
+					},
+				}
+			);
+			return res
+		} catch (err) {
+			console.log("foto" + err)
 			return err
 		}
-   };
+	};
 
-   async deletarAnuncio(id){
-      const token = await AsyncStorage.getItem('token');
-		try{
-			const detalhe = await api.delete('/veiculos/'+id, { 
+	async deletarAnuncio(id) {
+		const token = await AsyncStorage.getItem('@App:token');
+		try {
+			const detalhe = await api.delete('/veiculos/' + id, {
 				headers: {
-	            'Content-Type': 'application/json',
-               'Authorization': 'Bearer ' + token
-	        	}
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + token
+				}
 			})
 			return detalhe
 		} catch (err) {

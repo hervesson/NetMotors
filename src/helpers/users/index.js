@@ -24,8 +24,8 @@ class HelpersUsers {
 			try {
 				const payload = {
 					name: values.name,
-            	lastname: values.lastname,
-            	cpf: values.cpf,
+					lastname: values.lastname,
+					cpf: values.cpf,
 					celular: values.celular,
 					phone: values.phone,
 					cep: values.cep,
@@ -39,7 +39,7 @@ class HelpersUsers {
 					instagram: values.instagram,
 					tipo_registro: "pessoa_fisica",
 				}
-				const user = api.put('/usuarios/'+values.id, payload, {
+				const user = api.put('/usuarios/' + values.id, payload, {
 					headers: {
 						'Content-Type': 'application/json',
 						'Authorization': 'Bearer ' + values.token
@@ -53,12 +53,12 @@ class HelpersUsers {
 	}
 
 	async GetFavoritos() {
-		return new Promise(async(resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
 				const favoritos = await AsyncStorage.getItem('favoritos')
-			   if(favoritos !== null) {
-			     	resolve(JSON.parse(favoritos))
-			   }
+				if (favoritos !== null) {
+					resolve(JSON.parse(favoritos))
+				}
 			} catch (err) {
 				reject(err)
 			}

@@ -26,9 +26,10 @@ class HelpersAuth {
 	}
 
 	Logout(token){
-		return new Promise((resolve, reject) => {
+		console.log('token', token)
+		return new Promise(async(resolve, reject) => {
 			try {
-				const logout = api.post('/logout', {
+				const logout = await api.post('/logout', {
 					headers: {
 						'Content-Type': 'application/json',
 						'Authorization': 'Bearer ' + token
@@ -87,7 +88,7 @@ class HelpersAuth {
 		}
 	}
 
-	async MudarSenha(username) {
+	async forgotPassword(username) {
 		return new Promise((resolve, reject) => {
 			try {
 				const mudarSenha = api.get('/recover?username='+ username, {

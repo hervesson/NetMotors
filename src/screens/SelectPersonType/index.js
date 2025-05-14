@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { View, Text, SafeAreaView, TouchableOpacity, ImageBackground, StyleSheet, Image, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Background, MSBold, Primary, MSRegular, MSMedium } from "../../styles"
 import { Footer } from '../../components'
+import AuthContext from '../../contexts/auth';
 
 const Cadastro = ({navigation}) => {
 	const [background, setBackground] = useState([]);
+	const context = useContext(AuthContext)
 
 	return (
 		<SafeAreaView style={{flex: 1, backgroundColor: Primary}}>
@@ -85,7 +87,7 @@ const Cadastro = ({navigation}) => {
 				</View>
 				<Footer
 					press={() => navigation.navigate('Home')}
-					anunciar={() => props.user.username ? navigation.navigate("CadAnuncio1") : navigation.navigate("Login")}
+					anunciar={() => context?.user?.username ? navigation.navigate("AdRegistrationOne") : navigation.navigate("Login")}
 				/>
 			</View>
 			</ScrollView>

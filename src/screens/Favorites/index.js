@@ -1,20 +1,19 @@
-import React, { useState } from 'react'
-import { View, Text, SafeAreaView, FlatList, ImageBackground, TouchableOpacity, Animated, StyleSheet, Image } from 'react-native'
+import React, { useState, useContext } from 'react'
+import { View, Text, SafeAreaView, FlatList, ImageBackground, Pressable, Animated, StyleSheet, Image } from 'react-native'
 import { Background, MSBold, Primary, MSRegular, MSMedium, MSSemiBold } from "../../styles"
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import AuthContext from '../../contexts/auth';
 
 import { Footer } from "../../components"
 
-import { HelpersAnuncios } from '../../helpers';
-
-const Favoritos = (props) => {
+const Favoritos = () => {
+    const context = useContext(AuthContext)
     const [opacity, setOpacity] = useState(new Animated.Value(0));
-
 
     const navigation = useNavigation();
 
-    //const favoritos = props.favoritos.map(ids => { return ids.id })
+    const favoritos = context.favorites.map(ids => { return ids.id })
 
     function onLoad() {
         Animated.timing(opacity, {
@@ -27,7 +26,7 @@ const Favoritos = (props) => {
     const HeaderComponent = () => {
         return (
             <View>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <Pressable onPress={() => navigation.navigate('Home')}>
                     <ImageBackground
                         style={{ width: '100%', height: 64, flexDirection: "row" }}
                         source={require('../../assets/images/header.png')}
@@ -36,16 +35,16 @@ const Favoritos = (props) => {
                             <Icon name="arrow-back" size={30} color={Primary} onPress={() => navigation.goBack()} />
                         </View>
                         <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                            <TouchableOpacity style={styles.menu} onPress={() => navigation.openDrawer()}>
+                            <Pressable style={styles.menu} onPress={() => navigation.openDrawer()}>
                                 <Image
                                     style={{ width: 20, height: 20 }}
                                     source={require("../../assets/images/menuBlack.png")}
                                     resizeMode="contain"
                                 />
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </ImageBackground>
-                </TouchableOpacity>
+                </Pressable>
                 <View style={{ borderWidth: 0.3, borderColor: '#D0D0D0' }} />
                 <View style={{ backgroundColor: "white", width: '100%', height: 80, justifyContent: "center", alignItems: "center", flexDirection: "row", paddingHorizontal: 24 }}>
                     <Text style={styles.txtCar}>
@@ -56,9 +55,8 @@ const Favoritos = (props) => {
         )
     };
 
-
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.containerItem} onPress={() => navigation.navigate("Detalhe", { item: JSON.stringify(item), rota: 'detalhes', title: item.marca + " " + item.modelo })}>
+        <Pressable style={styles.containerItem} onPress={() => navigation.navigate("Detalhe", { item: JSON.stringify(item), rota: 'detalhes', title: item.marca + " " + item.modelo })}>
             <View style={{ paddingTop: 10, paddingHorizontal: 10 }}>
                 <View style={{ flexDirection: "row" }}>
                     <View style={{ flex: 2, justifyContent: "space-between", height: 24 }}>
@@ -70,17 +68,17 @@ const Favoritos = (props) => {
                         </Text>
                     </View>
                     <View style={{ flex: 1, alignItems: "flex-end" }}>
-                        <TouchableOpacity
+                        <Pressable
                             style={{ height: 24, width: 24, backgroundColor: "#eb8f8f", borderRadius: 5, justifyContent: "center", alignItems: "center" }}
                             onPress={() =>
                                 favoritos.includes(item.id) ?
-                                    props.remove_favorito(props.favoritos.filter(pares => pares.id !== item.id))
+                                    context.removerFavorito(context.favorites.filter(pares => pares.id !== item.id))
                                     :
-                                    props.add_favorito([...props.favoritos, item])
+                                    context.adicionarFavorito([...context.favorites, item])
                             }
                         >
                             <Icon name={favoritos.includes(item.id) ? "star" : "star-outline"} size={15} color={Primary} />
-                        </TouchableOpacity>
+                        </Pressable>
                     </View>
                 </View>
                 <View style={{ height: 228, width: '100%', marginTop: 5, }}>
@@ -91,7 +89,7 @@ const Favoritos = (props) => {
                     <Animated.Image
                         style={{ height: 228, width: '100%', marginTop: 5, borderRadius: 3, position: 'absolute', opacity: opacity }}
                         resizeMethod="resize"
-                        source={{ uri: item.pictures ? item.pictures[0] : null }}
+                        source={{ uri: item.fotos ? item.fotos[0] : null }}
                         onLoad={onLoad()}
                     />
                 </View>
@@ -153,7 +151,7 @@ const Favoritos = (props) => {
                     + Detalhes
                 </Text>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 
     const EmptyComponent = ({ item }) => (
@@ -169,7 +167,7 @@ const Favoritos = (props) => {
         <SafeAreaView style={{ backgroundColor: Primary, flex: 1 }}>
             <View style={{ backgroundColor: Background }}>
                 <FlatList
-                    data={props.favoritos}
+                    data={context.favorites}
                     renderItem={renderItem}
                     ListEmptyComponent={EmptyComponent}
                     keyExtractor={item => item.id}
@@ -177,7 +175,7 @@ const Favoritos = (props) => {
                     numColumns={1}
                     ListFooterComponent={() => <Footer
                         press={() => navigation.navigate('Home')}
-                        anunciar={() => props.user.username ? navigation.navigate("CadAnuncio1") : navigation.navigate("Login")}
+                        anunciar={() => context?.user?.username ? navigation.navigate("AdRegistrationOne") : navigation.navigate("Login")}
                     />}
                 />
             </View>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
 	View,
 	Text,
@@ -20,24 +20,42 @@ import {
 	MSMedium,
 } from '../../styles';
 import { useNavigation } from '@react-navigation/native';
+import AuthContext from '../../contexts/auth';
 
 //Listagens
 import { Categorias, SearchBar, CardCarHome, Footer } from '../../components';
 
+import { HelpersAnuncios } from "../../helpers"
+const anunciosHelpers = new HelpersAnuncios();
+
 const Home = (props) => {
+	const [abaixoFipe, setAbaixoFipe] = useState([])
+	const [adicionadosRecentemente, setAdicionadosRecentemente] = useState([])
 	const navigation = useNavigation();
+	const context = useContext(AuthContext)
 
 	useEffect(() => {
-		// props.requestAbaixoFipe();
-		// props.requestAddRecentemente();
-		// props.requestBrands()
+		const getData = async () => {
+			try {
+				const [abaixoFipeResult, adicionadosRecentementeResult] = await Promise.all([
+					anunciosHelpers.GetAbaixoFipe(),
+					anunciosHelpers.GetAdicionadosRecentemente(),
+				]);
+
+				setAbaixoFipe(abaixoFipeResult.data.rows);
+				setAdicionadosRecentemente(adicionadosRecentementeResult.data.rows);
+			} catch (error) {
+				console.error("Erro ao buscar dados:", error);
+			}
+		};
+
+		getData()
 	}, []);
 
 	return (
 		<SafeAreaView style={styles.area}>
 			<ScrollView style={styles.scrollView}>
 				<View style={{ backgroundColor: Background }}>
-
 					<ImageBackground
 						style={{ height: 332, alignItems: 'flex-end' }}
 						source={require('../../assets/images/banner.jpg')}
@@ -56,7 +74,7 @@ const Home = (props) => {
 						</TouchableOpacity>
 					</ImageBackground>
 
-					<SearchBar press={(search, condicao) => navigation.navigate('SearchResult', { item: search, condicao: condicao, rota: 'home', categoria: '' })} />
+					<SearchBar press={(search, condicao) => navigation.navigate('SearchResult', {item: search.length > 0 ? search : "Ofertas" , condicao: condicao, rota: 'home', categoria: ''})}/>
 
 					<Text style={styles.txtCategories}>Categorias</Text>
 					<View style={styles.listagem}>
@@ -71,14 +89,14 @@ const Home = (props) => {
 					</View>
 					<View style={[styles.listagem, { paddingTop: 32 }]}>
 						<FlatList
-							data={props.abaixo_fipe}
+							data={abaixoFipe}
 							renderItem={({ item }) =>
 								<CardCarHome
 									item={item}
-									press={(anuncio) => navigation.navigate('Detalhe', { item: JSON.stringify(anuncio), rota: 'card' })}
-									favoritos={props.favoritos}
-									adicionar={(value) => props.add_favorito([...props.favoritos, value])}
-									remover={(value) => props.remove_favorito(props.favoritos.filter(pares => pares.id !== value.id))}
+									onPress={(anuncio) => navigation.navigate('Detalhe', { item: JSON.stringify(anuncio), rota: 'card' })}
+									favoritos={context.favorites}
+									adicionar={(value) => context.adicionarFavorito([...context.favorites, value]) }
+									remover={(value) => context.removerFavorito(context.favorites.filter(pares => pares.id !== value.id))}
 								/>
 							}
 							keyExtractor={item => item.id}
@@ -92,14 +110,14 @@ const Home = (props) => {
 					</View>
 					<View style={[styles.listagem, { paddingVertical: 32 }]}>
 						<FlatList
-							data={props.add_recentemente}
+							data={adicionadosRecentemente}
 							renderItem={({ item }) =>
 								<CardCarHome
 									item={item}
-									press={(anuncio) => navigation.navigate('Detalhe', { item: JSON.stringify(anuncio), rota: 'card' })}
-									favoritos={props.favoritos}
-									adicionar={(value) => props.add_favorito([...props.favoritos, value])}
-									remover={(value) => props.remove_favorito(props.favoritos.filter(pares => pares !== value))}
+									onPress={(anuncio) => navigation.navigate('Detalhe', { item: JSON.stringify(anuncio), rota: 'card' })}
+									favoritos={context.favorites}
+									adicionar={(value) => context.adicionarFavorito([...context.favorites, value]) }
+									remover={(value) => context.removerFavorito(context.favorites.filter(pares => pares.id !== value.id))}
 								/>
 							}
 							keyExtractor={item => item.id}
@@ -109,8 +127,7 @@ const Home = (props) => {
 					</View>
 					<Footer
 						press={() => null}
-						// anunciar={() => props.user.username ? navigation.navigate("CadAnuncio1") : navigation.navigate("Login")}
-						anunciar={() => navigation.navigate("Login")}
+						anunciar={() => context?.user?.username ? navigation.navigate("AdRegistrationOne") : navigation.navigate("Login")}
 					/>
 				</View>
 			</ScrollView>

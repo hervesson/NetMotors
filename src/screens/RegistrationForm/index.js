@@ -10,7 +10,7 @@ import { TextInputMask } from 'react-native-masked-text'
 import { HelpersAuth } from '../../helpers';
 const anunciosAuth = new HelpersAuth();
 
-const RegistrationForm = (props) => {
+const RegistrationForm = () => {
     const [senha, setSenha] = useState('');
     const [confirmSenha, setConfirmSenha] = useState('')
     const [geraSenha, setGeraSenha] = useState(false);
@@ -66,8 +66,8 @@ const RegistrationForm = (props) => {
     }
 
     const sucesso = () => {
-        props.login_user(email, confirmSenha)
-        navigation.navigate('CadFinalizado')
+        context.handleLogin(email, confirmSenha)
+        navigation.navigate('SuccessRegister')
     }
 
     return (
@@ -181,17 +181,19 @@ const RegistrationForm = (props) => {
                                 Senha
                             </Text>
                             <View style={{ flex: 1, alignItems: 'center', flexDirection: "row" }}>
-                                <BouncyCheckbox
-                                    size={25}
-                                    isChecked={geraSenha}
-                                    fillColor={Primary}
-                                    unfillColor="#FFFFFF"
-                                    iconStyle={{ borderColor: Primary }}
-                                    onPress={(isChecked) => {
-                                        setGeraSenha(!isChecked)
-                                        isChecked ? geradorSenha() : setSenha('')
-                                    }}
-                                />
+                                <View>
+                                    <BouncyCheckbox
+                                        size={25}
+                                        isChecked={geraSenha}
+                                        fillColor={Primary}
+                                        unfillColor="#FFFFFF"
+                                        iconStyle={{ borderColor: Primary }}
+                                        onPress={(isChecked) => {
+                                            setGeraSenha(!isChecked)
+                                            isChecked ? geradorSenha() : setSenha('')
+                                        }}
+                                    />
+                                </View>
                                 <Text style={{ fontFamily: MSRegular, color: '#727272', fontSize: 14 }}>
                                     Gerar automaticamente
                                 </Text>
@@ -214,15 +216,17 @@ const RegistrationForm = (props) => {
                                     style={styles.input}
                                 />
                             </View>
-                            <View style={{ flex: 1, alignItems: 'center', flexDirection: "row" }}>
-                                <BouncyCheckbox
-                                    size={25}
-                                    isChecked={termos}
-                                    fillColor={Primary}
-                                    unfillColor="#FFFFFF"
-                                    iconStyle={{ borderColor: Primary }}
-                                    onPress={(isChecked) => setTermos(isChecked)}
-                                />
+                            <View style={{ flex: 1, alignItems: 'center', flexDirection: "row", justifyContent: 'space-between' }}>
+                                <View>
+                                    <BouncyCheckbox
+                                        size={25}
+                                        isChecked={termos}
+                                        fillColor={Primary}
+                                        unfillColor="#FFFFFF"
+                                        iconStyle={{ borderColor: Primary }}
+                                        onPress={(isChecked) => setTermos(isChecked)}
+                                    />
+                                </View>
                                 <Text style={{ paddingRight: 24, fontFamily: MSRegular, color: '#727272', fontSize: 14 }}>
                                     Li e concordo com os Termos de Uso e Política de Privacidade do site
                                 </Text>
@@ -231,7 +235,7 @@ const RegistrationForm = (props) => {
                         <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
                             <TouchableOpacity style={[styles.btn, { backgroundColor: Primary, marginRight: 5 }]} onPress={() => cadastrar()}>
                                 {
-                                    loading ? <ActivityIndicator /> : props.loading ? <ActivityIndicator /> : <Text style={[styles.txtBtn, { color: 'white' }]}>
+                                    loading ? <ActivityIndicator color={'white'} /> : loading ? <ActivityIndicator /> : <Text style={[styles.txtBtn, { color: 'white' }]}>
                                         REGISTRAR
                                     </Text>
                                 }
@@ -245,7 +249,7 @@ const RegistrationForm = (props) => {
                     </View>
                     <Footer
                         press={() => navigation.navigate('Home')}
-                        anunciar={() => props.user.username ? navigation.navigate("CadAnuncio1") : navigation.navigate("Login")}
+                        anunciar={() => context?.user?.username ? navigation.navigate("AdRegistrationOne") : navigation.navigate("Login")}
                     />
                 </View>
             </ScrollView>
@@ -284,10 +288,5 @@ const styles = StyleSheet.create({
         marginTop: 7
     }
 })
-
-const mapStateToProps = (state) => {
-    const { loading, user } = state.Auth
-    return { loading, user };
-}
 
 export default RegistrationForm;

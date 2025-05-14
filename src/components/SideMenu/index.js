@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Text, View, TouchableOpacity, Button, Image, StyleSheet, Linking } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Primary, MSSemiBold } from "../../styles" 
 import { useNavigation } from "@react-navigation/native"
 import { DrawerActions } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import AuthContext from "../../contexts/auth";
+
+import { HelpersAuth } from "../../helpers";
+const helpersAuth = new HelpersAuth()
 
 function SideMenu(props) {
-
+   const context = useContext(AuthContext);
    const navigation = useNavigation()
    
    const handlePress = async (url) => {
@@ -21,11 +25,6 @@ function SideMenu(props) {
       }
    }
 
-   const sair = async() => {
-      const value = await AsyncStorage.getItem('token')
-      props.logout(value)
-   }
-
    return (
       <DrawerContentScrollView {...props}>
          <View style={styles.header}>
@@ -35,18 +34,18 @@ function SideMenu(props) {
             <Image source={require("../../assets/images/logo.png")}/>
          </View>
          <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Anuncios')}>
-            {/*<Icon name="home" size={20} color={"#404040"} />*/}
+            <Icon name="home" size={20} color={"#404040"} />
             <Text style={styles.txtItem}>
                HOME
             </Text>
          </TouchableOpacity>
-         {/* {
-            props.user.username ? <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('User')}>
+         {
+            context?.user?.name ? <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('User')}>
                <Text style={styles.txtItem}>
                   MEU PERFIL
                </Text>
             </TouchableOpacity> : null
-         } */}
+         }
          <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Favorites')}>
             <Text style={styles.txtItem}>
                FAVORITOS
@@ -67,8 +66,8 @@ function SideMenu(props) {
                AJUDA
             </Text>
          </TouchableOpacity>
-         {/* {
-            props.user.username ? <TouchableOpacity style={styles.item} onPress={() => sair()}>
+         {
+            context?.user?.name ? <TouchableOpacity style={styles.item} onPress={() => context.logout()}>
                <Text style={styles.txtItem}>
                   LOGOUT
                </Text>
@@ -77,8 +76,7 @@ function SideMenu(props) {
                   LOGIN
                </Text>
             </TouchableOpacity>
-         } */}
-         
+         }
       </DrawerContentScrollView>
    );
 }
